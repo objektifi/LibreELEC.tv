@@ -2,9 +2,9 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="pvr.teleboy"
-PKG_VERSION="19.8.0-Matrix"
-PKG_SHA256="71516e5f90b2ccb24ddff9f577f4521da61808347ad6ef3e852fb17c5f1a978e"
-PKG_REV="3"
+PKG_VERSION="20.1.0-Nexus"
+PKG_SHA256="0a0a95e05dd3b1b23a49ba8875363c364888ca43377c2104b709df0fbe4a809d"
+PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/rbuehlma/pvr.teleboy"

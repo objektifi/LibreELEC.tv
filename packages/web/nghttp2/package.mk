@@ -2,8 +2,8 @@
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="nghttp2"
-PKG_VERSION="1.42.0"
-PKG_SHA256="c5a7f09020f31247d0d1609078a75efadeccb7e5b86fc2e4389189b1b431fe63"
+PKG_VERSION="1.45.1"
+PKG_SHA256="abdc4addccadbc7d89abe27c4d6427d78e57d139f69c1f45749227393c68bf79"
 PKG_LICENSE="MIT"
 PKG_SITE="http://www.linuxfromscratch.org/blfs/view/cvs/basicnet/nghttp2.html"
 PKG_URL="https://github.com/nghttp2/nghttp2/releases/download/v${PKG_VERSION}/nghttp2-${PKG_VERSION}.tar.xz"

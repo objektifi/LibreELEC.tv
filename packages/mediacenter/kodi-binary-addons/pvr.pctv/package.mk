@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="pvr.pctv"
-PKG_VERSION="6.1.1-Matrix"
-PKG_SHA256="2692fc0387762f62e8fc9e57f21d613e4c2e52553d3eb30ee042f91cc61155ac"
+PKG_VERSION="20.1.0-Nexus"
+PKG_SHA256="498fe7bc50d344e1d12759d3a14d9e7d7985092b7a90ed7038c20fe0194f560e"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"

@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="e2fsprogs"
-PKG_VERSION="1.45.6"
-PKG_SHA256="ffa7ae6954395abdc50d0f8605d8be84736465afc53b8938ef473fcf7ff44256"
+PKG_VERSION="1.45.7"
+PKG_SHA256="62d49c86d9d4becf305093edd65464484dc9ea41c6ff9ae4f536e4a341b171a2"
 PKG_LICENSE="GPL"
 PKG_SITE="http://e2fsprogs.sourceforge.net/"
 PKG_URL="https://www.kernel.org/pub/linux/kernel/people/tytso/${PKG_NAME}/v${PKG_VERSION}/${PKG_NAME}-${PKG_VERSION}.tar.xz"
@@ -13,10 +13,6 @@ PKG_DEPENDS_TARGET="toolchain"
 PKG_DEPENDS_INIT="toolchain"
 PKG_LONGDESC="The filesystem utilities for the EXT2 filesystem, including e2fsck, mke2fs, dumpe2fs, fsck, and others."
 PKG_BUILD_FLAGS="-parallel"
-
-if [ "${HFSTOOLS}" = "yes" ]; then
-  PKG_DEPENDS_TARGET+=" diskdev_cmds"
-fi
 
 PKG_CONFIGURE_OPTS_HOST="--prefix=${TOOLCHAIN}/ \
                          --bindir=${TOOLCHAIN}/bin \
@@ -40,6 +36,12 @@ PKG_CONFIGURE_OPTS_HOST="--prefix=${TOOLCHAIN}/ \
                          --disable-rpath \
                          --disable-fuse2fs \
                          --with-gnu-ld"
+
+post_unpack() {
+  # Increase minimal inode size to avoid:
+  # "ext4 filesystem being mounted at xxx supports timestamps until 2038 (0x7fffffff)"
+  sed -i 's/inode_size = 128/inode_size = 256/g' ${PKG_BUILD}/misc/mke2fs.conf.in
+}
 
 pre_configure() {
   PKG_CONFIGURE_OPTS_INIT="BUILD_CC=${HOST_CC} \

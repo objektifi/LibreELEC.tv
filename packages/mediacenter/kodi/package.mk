@@ -3,8 +3,8 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="kodi"
-PKG_VERSION="6402a50950ff6463042f8891ec4029c782730391"
-PKG_SHA256="56e1a64f2cd1b38e6997dac3057cdeb81e33109bfa449521493208b514466bd0"
+PKG_VERSION="08b7599d63e063545e34a24bb17fc3738cd4dde7"
+PKG_SHA256="b673a0a0e0db95ead29387b3c1273e77de160b69ff39c18f040c142614314e6a"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kodi.tv"
 PKG_URL="https://github.com/xbmc/xbmc/archive/${PKG_VERSION}.tar.gz"
@@ -28,14 +28,16 @@ configure_package() {
 
   if [ "${DISPLAYSERVER}" = "x11" ]; then
     PKG_DEPENDS_TARGET+=" libX11 libXext libdrm libXrandr"
-    KODI_XORG="-DCORE_PLATFORM_NAME=x11 -DAPP_RENDER_SYSTEM=gl"
+    KODI_PLATFORM="-DCORE_PLATFORM_NAME=x11 \
+                   -DAPP_RENDER_SYSTEM=gl"
   elif [ "${DISPLAYSERVER}" = "weston" ]; then
     PKG_DEPENDS_TARGET+=" wayland waylandpp"
-    CFLAGS+=" -DMESA_EGL_NO_X11_HEADERS"
-    CXXFLAGS+=" -DMESA_EGL_NO_X11_HEADERS"
-    KODI_XORG="-DCORE_PLATFORM_NAME=wayland \
-               -DAPP_RENDER_SYSTEM=gles \
-               -DWAYLANDPP_PROTOCOLS_DIR=${SYSROOT_PREFIX}/usr/share/waylandpp/protocols"
+    CFLAGS+=" -DEGL_NO_X11"
+    CXXFLAGS+=" -DEGL_NO_X11"
+    KODI_PLATFORM="-DCORE_PLATFORM_NAME=wayland \
+                   -DAPP_RENDER_SYSTEM=gles \
+                   -DWAYLANDPP_SCANNER=${TOOLCHAIN}/bin/wayland-scanner++ \
+                   -DWAYLANDPP_PROTOCOLS_DIR=${SYSROOT_PREFIX}/usr/share/waylandpp/protocols"
   fi
 
   if [ ! "${OPENGL}" = "no" ]; then
@@ -131,6 +133,9 @@ configure_package() {
 
   if [ "${KODI_SAMBA_SUPPORT}" = yes ]; then
     PKG_DEPENDS_TARGET+=" samba"
+    KODI_SAMBA="-DENABLE_SMBCLIENT=ON"
+  else
+    KODI_SAMBA="-DENABLE_SMBCLIENT=OFF"
   fi
 
   if [ "${KODI_WEBSERVER_SUPPORT}" = yes ]; then
@@ -169,13 +174,17 @@ configure_package() {
     KODI_ARCH="-DWITH_ARCH=${TARGET_ARCH}"
   fi
 
-  if [ ! "${KODIPLAYER_DRIVER}" = default ]; then
+  if [ ! "${KODIPLAYER_DRIVER}" = "default" -a "${DISPLAYSERVER}" = "no" ]; then
     PKG_DEPENDS_TARGET+=" ${KODIPLAYER_DRIVER} libinput libxkbcommon"
     if [ "${OPENGLES_SUPPORT}" = yes -a "${KODIPLAYER_DRIVER}" = "${OPENGLES}" ]; then
       KODI_PLAYER="-DCORE_PLATFORM_NAME=gbm -DAPP_RENDER_SYSTEM=gles"
       CFLAGS+=" -DEGL_NO_X11"
       CXXFLAGS+=" -DEGL_NO_X11"
-      PKG_APPLIANCE_XML="${PKG_DIR}/config/appliance-gbm.xml"
+      if [ "${PROJECT}" = "Generic" ]; then
+        PKG_APPLIANCE_XML="${PKG_DIR}/config/appliance-gbm-generic.xml"
+      else
+        PKG_APPLIANCE_XML="${PKG_DIR}/config/appliance-gbm.xml"
+      fi
     fi
   fi
 
@@ -214,7 +223,7 @@ configure_package() {
                          ${KODI_VDPAU} \
                          ${KODI_VAAPI} \
                          ${KODI_CEC} \
-                         ${KODI_XORG} \
+                         ${KODI_PLATFORM} \
                          ${KODI_SAMBA} \
                          ${KODI_NFS} \
                          ${KODI_LIBDVD} \

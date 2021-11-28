@@ -16,30 +16,26 @@ PKG_PATCH_DIRS="${LINUX}"
 
 case "${LINUX}" in
   amlogic)
-    PKG_VERSION="6cc049b8e0d05e1519d71afcf2d40d3aa5a48366" # 5.11.10
-    PKG_SHA256="d5f4a33af53ef0b22049366b2ae2c30a9bf5741dce7d1d2ed6e499c1d9d31c20"
+    PKG_VERSION="f00712e27083550be3031099b7697925533a6e01" # 5.15.5
+    PKG_SHA256="d1d06b7d0b2b23099f17b18559680821f39275e245d6be3d48a4867e0a7076c7"
     PKG_URL="https://github.com/torvalds/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     ;;
   raspberrypi)
-    PKG_VERSION="9b672c5441497337f286686122a6f17fd7985cc2" # 5.10.46
-    PKG_SHA256="5f620ce59d6f27dd77f7675517c3f691b40c4b9cce6d608f3bbfd3e449f9125c"
+    PKG_VERSION="027a7a824320f69f6b30503c7fcf6aea2ffd56fd" # 5.15.2
+    PKG_SHA256="45eef0a1c0cb326500e41f9f6ca29c680b1420103844f27d2c3509b9c9287d20"
     PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     ;;
   *)
-    PKG_VERSION="5.10.47"
-    PKG_SHA256="30b52a2fe6d1e0c1e1dc651d5df9a37eb54b35ea1f7f51b9f23d8903c29ae1c5"
+    PKG_VERSION="5.15.5"
+    PKG_SHA256="e9565a301525ac81c142ceb832f9053dd5685e107dbcf753d0de4c58bc98851f"
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v5.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
     PKG_PATCH_DIRS="default"
     ;;
 esac
 
 PKG_KERNEL_CFG_FILE=$(kernel_config_path) || die
-
-if listcontains "${UBOOT_FIRMWARE}" "crust"; then
-  PKG_PATCH_DIRS+=" crust"
-fi
 
 if [ -n "${KERNEL_TOOLCHAIN}" ]; then
   PKG_DEPENDS_HOST+=" gcc-arm-${KERNEL_TOOLCHAIN}:host"
@@ -82,14 +78,7 @@ post_patch() {
 }
 
 make_host() {
-  make \
-    ARCH=${HEADERS_ARCH:-${TARGET_KERNEL_ARCH}} \
-    HOSTCC="${TOOLCHAIN}/bin/host-gcc" \
-    HOSTCXX="${TOOLCHAIN}/bin/host-g++" \
-    HOSTCFLAGS="${HOST_CFLAGS}" \
-    HOSTCXXFLAGS="${HOST_CXXFLAGS}" \
-    HOSTLDFLAGS="${HOST_LDFLAGS}" \
-    headers_check
+  :
 }
 
 makeinstall_host() {
@@ -190,7 +179,7 @@ pre_make_target() {
         continue
       fi
 
-      if [ "$($PKG_BUILD/scripts/config --state ${OPTION%%=*})" != "${OPTION##*=}" ]; then
+      if [ "$(${PKG_BUILD}/scripts/config --state ${OPTION%%=*})" != "${OPTION##*=}" ]; then
         MISSING_KERNEL_OPTIONS+="\t${OPTION}\n"
       fi
     done < ${DISTRO_DIR}/${DISTRO}/kernel_options

@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="pvr.dvblink"
-PKG_VERSION="9.1.2-Matrix"
-PKG_SHA256="e4491b7f4ee7f565f5b13ca4ea52640c2be076271d22de1fb4e35e69dc8c2bbf"
+PKG_VERSION="20.1.0-Nexus"
+PKG_SHA256="f74e8e58bdbb43d5eace73ed1594c11cf5612cfb19304200da8b200fb220b736"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"

@@ -8,16 +8,13 @@
       aarch64)
         TARGET_CPU="cortex-a53"
         TARGET_CPU_FLAGS="+crc+fp+simd"
-        TARGET_FEATURES="64bit"
         ;;
       arm)
         TARGET_KERNEL_ARCH="arm64"
-        TARGET_KERNEL_PATCH_ARCH="aarch64"
         TARGET_FLOAT=hard
         TARGET_CPU="cortex-a53"
         TARGET_CPU_FLAGS="+crc"
         TARGET_FPU="neon-fp-armv8"
-        TARGET_FEATURES="32bit"
         ;;
     esac
 
@@ -75,9 +72,9 @@
   # Windowmanager to use (ratpoison / fluxbox / none)
     WINDOWMANAGER="none"
 
-  # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau)
+  # Xorg Graphic drivers to use (all / freedreno)
   # Space separated list is supported,
-  # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia nouveau"
+  # e.g. GRAPHIC_DRIVERS="freedreno"
     GRAPHIC_DRIVERS="freedreno"
 
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap / libamcodec)
