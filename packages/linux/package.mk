@@ -5,8 +5,8 @@
 PKG_NAME="linux"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kernel.org"
-PKG_DEPENDS_HOST="ccache:host rsync:host openssl:host"
-PKG_DEPENDS_TARGET="toolchain linux:host kmod:host xz:host keyutils ${KERNEL_EXTRA_DEPENDS_TARGET}"
+PKG_DEPENDS_HOST="ccache:host rsync:host"
+PKG_DEPENDS_TARGET="linux:host kmod:host xz:host keyutils openssl:host ${KERNEL_EXTRA_DEPENDS_TARGET}"
 PKG_NEED_UNPACK="${LINUX_DEPENDS} $(get_pkg_directory initramfs) $(get_pkg_variable initramfs PKG_NEED_UNPACK)"
 PKG_LONGDESC="This package contains a precompiled kernel image and the modules."
 PKG_IS_KERNEL_PKG="yes"
@@ -16,21 +16,21 @@ PKG_PATCH_DIRS="${LINUX}"
 
 case "${LINUX}" in
   amlogic)
-    PKG_VERSION="f00712e27083550be3031099b7697925533a6e01" # 5.15.5
-    PKG_SHA256="d1d06b7d0b2b23099f17b18559680821f39275e245d6be3d48a4867e0a7076c7"
+    PKG_VERSION="90ca7a874a9093e500cc6147cecd85ad2e6a2852" # 6.1.5
+    PKG_SHA256="6fed4ac4f4585ebac26e82022f377fca29f8b4dc8042e34db1f67b53f4f5d2d8"
     PKG_URL="https://github.com/torvalds/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     ;;
   raspberrypi)
-    PKG_VERSION="b12c997cf2c8cad9bb1de234684ce6fea78c5725" # 5.15.5
-    PKG_SHA256="cc7fff474db3efbe4ed1f444deb5f48902d22fc954cc771702400491d16dee9a"
+    PKG_VERSION="2c69ae1412faa66018abc9c86c521111d30de095" # 6.1.7
+    PKG_SHA256="5dce685614844c3054a831832dbd66aba6b94930f471634cc90b99983d8a7897"
     PKG_URL="https://github.com/raspberrypi/linux/archive/${PKG_VERSION}.tar.gz"
     PKG_SOURCE_NAME="linux-${LINUX}-${PKG_VERSION}.tar.gz"
     ;;
   *)
-    PKG_VERSION="5.15.5"
-    PKG_SHA256="e9565a301525ac81c142ceb832f9053dd5685e107dbcf753d0de4c58bc98851f"
-    PKG_URL="https://www.kernel.org/pub/linux/kernel/v5.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+    PKG_VERSION="6.1.7"
+    PKG_SHA256="4ab048bad2e7380d3b827f1fad5ad2d2fc4f2e80e1c604d85d1f8781debe600f"
+    PKG_URL="https://www.kernel.org/pub/linux/kernel/v${PKG_VERSION/.*/}.x/${PKG_NAME}-${PKG_VERSION}.tar.xz"
     PKG_PATCH_DIRS="default"
     ;;
 esac
@@ -38,9 +38,10 @@ esac
 PKG_KERNEL_CFG_FILE=$(kernel_config_path) || die
 
 if [ -n "${KERNEL_TOOLCHAIN}" ]; then
-  PKG_DEPENDS_HOST+=" gcc-arm-${KERNEL_TOOLCHAIN}:host"
-  PKG_DEPENDS_TARGET+=" gcc-arm-${KERNEL_TOOLCHAIN}:host"
+  PKG_DEPENDS_TARGET+=" gcc-${KERNEL_TOOLCHAIN}:host"
   HEADERS_ARCH=${TARGET_ARCH}
+else
+  PKG_DEPENDS_TARGET+=" toolchain"
 fi
 
 if [ "${PKG_BUILD_PERF}" != "no" ] && grep -q ^CONFIG_PERF_EVENTS= ${PKG_KERNEL_CFG_FILE}; then
@@ -179,7 +180,7 @@ pre_make_target() {
         continue
       fi
 
-      if [ "$(${PKG_BUILD}/scripts/config --state ${OPTION%%=*})" != "${OPTION##*=}" ]; then
+      if [ "$(${PKG_BUILD}/scripts/config --state ${OPTION%%=*})" != "$(echo ${OPTION##*=} | tr -d '"')" ]; then
         MISSING_KERNEL_OPTIONS+="\t${OPTION}\n"
       fi
     done < ${DISTRO_DIR}/${DISTRO}/kernel_options
@@ -282,6 +283,12 @@ makeinstall_target() {
       fi
     done
   elif [ "${BOOTLOADER}" = "bcm2835-bootloader" ]; then
+    # RPi firmware will decompress gzipped kernels prior to booting
+    if [ "${TARGET_KERNEL_ARCH}" = "arm64" ]; then
+      pigz --best --force ${INSTALL}/.image/${KERNEL_TARGET}
+      mv ${INSTALL}/.image/${KERNEL_TARGET}.gz ${INSTALL}/.image/${KERNEL_TARGET}
+    fi
+
     mkdir -p ${INSTALL}/usr/share/bootloader/overlays
 
     # install platform dtbs, but remove upstream kernel dtbs (i.e. without downstream

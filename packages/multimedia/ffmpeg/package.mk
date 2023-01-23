@@ -3,33 +3,40 @@
 # Copyright (C) 2017-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="ffmpeg"
-PKG_LICENSE="LGPLv2.1+"
+PKG_VERSION="4.4.1"
+PKG_SHA256="eadbad9e9ab30b25f5520fbfde99fae4a92a1ae3c0257a8d68569a4651e30e02"
+PKG_LICENSE="GPL-3.0-only"
 PKG_SITE="https://ffmpeg.org"
-PKG_DEPENDS_TARGET="toolchain zlib bzip2 gnutls speex"
+PKG_URL="http://ffmpeg.org/releases/ffmpeg-${PKG_VERSION}.tar.xz"
+PKG_DEPENDS_TARGET="toolchain zlib bzip2 openssl speex"
 PKG_LONGDESC="FFmpeg is a complete, cross-platform solution to record, convert and stream audio and video."
-PKG_BUILD_FLAGS="-gold"
+PKG_PATCH_DIRS="kodi libreelec"
 
-case "$PROJECT" in
+case "${PROJECT}" in
   Amlogic)
-    PKG_VERSION="9f237dd0247797f89860302dac60c32cda48a9f9" # dev/4.4/rpi_import_1 @ working video
-    PKG_SHA256="3d407a426387679a607d60cdad2f559c4ad49a87f2a179b4f98983fa86ce3121"
+    PKG_VERSION="f9638b6331277e53ecd9276db5fe6dcd91d44c57"
+    PKG_FFMPEG_BRANCH="dev/4.4/rpi_import_1"
+    PKG_SHA256="3b42cbffd15d95d59e402475fcdb1aaac9ae6a8404a521b95d1fe79c6b2baad4"
     PKG_URL="https://github.com/jc-kynesim/rpi-ffmpeg/archive/${PKG_VERSION}.tar.gz"
-    PKG_PATCH_DIRS="libreelec"
+    PKG_PATCH_DIRS="libreelec dav1d"
     ;;
   RPi)
-    PKG_VERSION="4.4-N-Alpha1"
-    PKG_SHA256="eb396f46ef7c5ac01b67818d0f2c0516fd4ab32aa9065a9ffa71eebede67ff20"
-    PKG_URL="https://github.com/xbmc/FFmpeg/archive/${PKG_VERSION}.tar.gz"
     PKG_FFMPEG_RPI="--disable-mmal --disable-rpi --enable-sand"
-    PKG_PATCH_DIRS="libreelec rpi"
+    PKG_PATCH_DIRS+=" rpi"
     ;;
   *)
-    PKG_VERSION="4.4-N-Alpha1"
-    PKG_SHA256="eb396f46ef7c5ac01b67818d0f2c0516fd4ab32aa9065a9ffa71eebede67ff20"
-    PKG_URL="https://github.com/xbmc/FFmpeg/archive/${PKG_VERSION}.tar.gz"
-    PKG_PATCH_DIRS="libreelec v4l2-request v4l2-drmprime"
+    PKG_PATCH_DIRS+=" v4l2-request v4l2-drmprime"
     ;;
 esac
+
+post_unpack() {
+  # Fix FFmpeg version
+  if [ "${PROJECT}" = "Amlogic" ]; then
+    echo "${PKG_FFMPEG_BRANCH}-${PKG_VERSION:0:7}" > ${PKG_BUILD}/VERSION
+  else
+    echo "${PKG_VERSION}" > ${PKG_BUILD}/RELEASE
+  fi
+}
 
 # Dependencies
 get_graphicdrivers
@@ -115,6 +122,15 @@ pre_configure_target() {
   rm -rf .${TARGET_NAME}
 }
 
+if [ "${FFMPEG_TESTING}" = "yes" ]; then
+  PKG_FFMPEG_TESTING="--enable-encoder=wrapped_avframe --enable-muxer=null"
+  if [ "${PROJECT}" = "RPi" ]; then
+    PKG_FFMPEG_TESTING+=" --enable-vout-drm --enable-outdev=vout_drm"
+  fi
+else
+  PKG_FFMPEG_TESTING="--disable-programs"
+fi
+
 configure_target() {
   ./configure --prefix="/usr" \
               --cpu="${TARGET_CPU}" \
@@ -138,7 +154,7 @@ configure_target() {
               --disable-static \
               --enable-shared \
               --enable-gpl \
-              --disable-version3 \
+              --enable-version3 \
               --enable-logging \
               --disable-doc \
               ${PKG_FFMPEG_DEBUG} \
@@ -146,7 +162,6 @@ configure_target() {
               --pkg-config="${TOOLCHAIN}/bin/pkg-config" \
               --enable-optimizations \
               --disable-extra-warnings \
-              --disable-programs \
               --enable-avdevice \
               --enable-avcodec \
               --enable-avformat \
@@ -156,7 +171,7 @@ configure_target() {
               --disable-devices \
               --enable-pthreads \
               --enable-network \
-              --enable-gnutls --disable-openssl \
+              --disable-gnutls --enable-openssl \
               --disable-gray \
               --enable-swscale-alpha \
               --disable-small \
@@ -218,7 +233,8 @@ configure_target() {
               --enable-asm \
               --disable-altivec \
               ${PKG_FFMPEG_FPU} \
-              --disable-symver
+              --disable-symver \
+              ${PKG_FFMPEG_TESTING}
 }
 
 post_makeinstall_target() {

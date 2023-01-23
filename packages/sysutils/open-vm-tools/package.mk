@@ -4,18 +4,19 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="open-vm-tools"
-PKG_VERSION="11.3.5"
-PKG_SHA256="26053a93d8aa5387e49a974ed3d0c89a1efd7e0911d694cd9b9f4306bd74b885"
+PKG_VERSION="12.1.5"
+PKG_SHA256="678d08b46fba15f2b4c39245b5bc4deec30284d6f13ee279c233bc3d3627ec8a"
 PKG_ARCH="x86_64"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/vmware/open-vm-tools"
 PKG_URL="https://github.com/vmware/open-vm-tools/archive/stable-${PKG_VERSION}.tar.gz"
-PKG_DEPENDS_TARGET="toolchain fuse glib:host glib libdnet libtirpc"
+PKG_DEPENDS_TARGET="toolchain fuse3 glib:host glib libdnet libtirpc"
 PKG_LONGDESC="open-vm-tools: open source implementation of VMware Tools"
 PKG_TOOLCHAIN="autotools"
 
 PKG_CONFIGURE_OPTS_TARGET="--disable-docs \
                            --disable-tests \
+                           --disable-containerinfo \
                            --disable-deploypkg \
                            --without-pam \
                            --without-gtk2 \
@@ -25,22 +26,25 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-docs \
                            --without-xerces \
                            --without-icu \
                            --without-kernel-modules \
+                           --with-fuse=fuse3 \
                            --with-udev-rules-dir=/usr/lib/udev/rules.d/ \
                            --with-sysroot=${SYSROOT_PREFIX}"
 
+configure_package() {
+  PKG_CONFIGURE_SCRIPT="${PKG_BUILD}/open-vm-tools/configure"
+}
+
 post_unpack() {
-  mv ${PKG_BUILD}/${PKG_NAME}/* ${PKG_BUILD}/
-
-  sed -e 's|.*common-agent/etc/config/Makefile.*||' -i ${PKG_BUILD}/configure.ac
-
-  mkdir -p ${PKG_BUILD}/common-agent/etc/config
-
   # Hack to allow package to be bumped without linking against old libraries
   rm -f ${SYSROOT_PREFIX}/usr/lib/libvmtools*
 }
 
 pre_configure_target() {
   export LIBS="-ldnet -ltirpc"
+}
+
+post_configure_target() {
+  libtool_remove_rpath libtool
 }
 
 post_makeinstall_target() {

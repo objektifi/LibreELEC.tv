@@ -3,11 +3,11 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="libX11"
-PKG_VERSION="1.7.2"
-PKG_SHA256="1cfa35e37aaabbe4792e9bb690468efefbfbf6b147d9c69d6f90d13c3092ea6c"
+PKG_VERSION="1.8.3"
+PKG_SHA256="e31565c84006b6b8e01dc9399c806085739710bc2db2e0930f1511ed9d6585bd"
 PKG_LICENSE="OSS"
-PKG_SITE="http://www.x.org/"
-PKG_URL="http://xorg.freedesktop.org/archive/individual/lib/${PKG_NAME}-${PKG_VERSION}.tar.bz2"
+PKG_SITE="https://www.x.org/"
+PKG_URL="https://xorg.freedesktop.org/archive/individual/lib/${PKG_NAME}-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain util-macros xtrans libXau libxcb xorgproto"
 PKG_LONGDESC="LibX11 is the main X11 library containing all the client-side code to access the X11 windowing system."
 PKG_TOOLCHAIN="autotools"

@@ -3,11 +3,11 @@
 # Copyright (C) 2019-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="nano"
-PKG_VERSION="5.9"
-PKG_SHA256="757db8cda4bb2873599e47783af463e3b547a627b0cabb30ea7bf71fb4c24937"
+PKG_VERSION="7.1"
+PKG_SHA256="57ba751e9b7519f0f6ddee505202e387c75dde440c1f7aa1b9310cc381406836"
 PKG_LICENSE="GPL"
-PKG_SITE="http://www.nano-editor.org/"
-PKG_URL="http://ftpmirror.gnu.org/nano/${PKG_NAME}-${PKG_VERSION}.tar.xz"
+PKG_SITE="https://www.nano-editor.org/"
+PKG_URL="https://www.nano-editor.org/dist/v${PKG_VERSION%%.*}/${PKG_NAME}-${PKG_VERSION}.tar.xz"
 PKG_DEPENDS_TARGET="toolchain ncurses"
 PKG_LONGDESC="Nano is an enhanced clone of the Pico text editor."
 

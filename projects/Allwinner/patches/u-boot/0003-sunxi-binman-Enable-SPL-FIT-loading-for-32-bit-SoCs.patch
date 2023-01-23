@@ -34,9 +34,9 @@ index ebb19272708d..cb321b6afac3 100644
  	imply SPL_LIBCOMMON_SUPPORT
  	imply SPL_LIBGENERIC_SUPPORT
 +	imply SPL_LOAD_FIT
- 	imply SPL_MMC_SUPPORT if MMC
+ 	imply SPL_MMC if MMC
  	imply SPL_POWER
- 	imply SPL_SERIAL_SUPPORT
+ 	imply SPL_SERIAL
 diff --git a/arch/arm/dts/sunxi-u-boot.dtsi b/arch/arm/dts/sunxi-u-boot.dtsi
 index 4a6ed3a7dd5c..ad1f97632979 100644
 --- a/arch/arm/dts/sunxi-u-boot.dtsi
@@ -152,8 +152,8 @@ index 8a8a971a91e1..374818c05741 100644
  	bool "Remove functionality from SPL FIT loading to reduce size"
  	depends on SPL_FIT
 -	default y if MACH_SUN50I || MACH_SUN50I_H5 || SUN50I_GEN_H6
--	default y if ARCH_IMX8M
-+	default y if ARCH_IMX8M || ARCH_SUNXI
+-	default y if ARCH_IMX8M || ARCH_IMX9
++	default y if ARCH_IMX8M || ARCH_IMX9 || ARCH_SUNXI
  	help
  	  Enable this to reduce the size of the FIT image loading code
  	  in SPL, if space for the SPL binary is very tight.

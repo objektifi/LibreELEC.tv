@@ -46,7 +46,7 @@
     KODI_DVDCSS_SUPPORT="no"
 
   # additional drivers to install
-    ADDITIONAL_DRIVERS=""
+    ADDITIONAL_DRIVERS+=""
 
   # build and install bluetooth support (yes / no)
     BLUETOOTH_SUPPORT="no"
@@ -99,14 +99,8 @@
   # build and install diskmounter support (udevil)
     UDEVIL="no"
 
-  # build and install NTFS-3G fuse support (yes / no)
-    NTFS3G="no"
-
   # build and install hfs filesystem utilities (yes / no)
     HFSTOOLS="no"
-
-  # Windowmanager to use (fluxbox / none)
-    WINDOWMANAGER="none"
 
   # Xorg Graphic drivers to use (all / r300,r600,nvidia)
     GRAPHIC_DRIVERS="mesa"
@@ -130,7 +124,7 @@
     SWAP_SUPPORT="no"
 
   # additional packages to install
-    ADDITIONAL_PACKAGES=""
+    ADDITIONAL_PACKAGES+=""
 
   # build with installer (yes / no)
     INSTALLER_SUPPORT="no"
@@ -141,14 +135,17 @@
   # cron support (yes / no)
     CRON_SUPPORT="no"
 
-  # build and install ALSA Audio support (yes / no)
-    ALSA_SUPPORT="no"
-
   # OpenGL(X) implementation to use (no / mesa)
     OPENGL="no"
 
-  # Displayserver to use (x11 / no)
+  # Vulkan implementation to use (vulkan-loader / no)
+    VULKAN="no"
+
+  # Displayserver to use (wl / no)
     DISPLAYSERVER="no"
+
+  # Windowmanager to use (weston / no)
+    WINDOWMANAGER="no"
 
   # additional Firmware to use
     FIRMWARE=""
